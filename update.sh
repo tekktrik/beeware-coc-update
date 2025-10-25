@@ -48,7 +48,7 @@ for repo in "${repo_list[@]}"; do
 
     # Add the new code of conduct
     echo "Replacing Code of Conduct..."
-    cp ../../$coc_filename .
+    cp ../../../$coc_filename .
 
     # Commit and push the update
     echo "Syncing updates to remote..."
