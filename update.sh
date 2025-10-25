@@ -5,6 +5,7 @@ this_repo="tekktrik/beeware-coc-update"
 author="Alec Delaney"
 author_email="tekktrik@gmail.com"
 user="tekktrik"
+tempdir_name="temp"
 
 # Information about destination and changes
 owner=beeware
@@ -12,13 +13,12 @@ coc_filename=CODE_OF_CONDUCT.md
 
 # Create a temporary working directory
 echo "Creating temporary working directory..."
-if [ ! -d temp ]; then
-    mkdir temp
+if [ -d temp ]; then
+    echo "Temporary working directory '$tempdir_name' already exists!"
+    exit 1
 fi
-cd temp
-timestamp=$(date +%s)
-mkdir $timestamp
-cd $timestamp
+mkdir "$tempdir_name"
+cd "$tempdir_name"
 
 # Get all non-archived repositories
 readarray -t repo_list < <(gh repo list $owner --no-archived --json name --jq ".[].name")
@@ -26,7 +26,7 @@ readarray -t repo_list < <(gh repo list $owner --no-archived --json name --jq ".
 # Save a list of repositories for deletion after pull requests are merged
 for repo in "${repo_list[@]}"; do
   echo "$repo"
-done > "../../repo_list.txt"
+done > "../repo_list.txt"
 
 # Make changes to found repos
 for repo in "${repo_list[@]}"; do
@@ -48,7 +48,7 @@ for repo in "${repo_list[@]}"; do
 
     # Add the new code of conduct
     echo "Replacing Code of Conduct..."
-    cp ../../../$coc_filename .
+    cp ../../$coc_filename .
 
     # Commit and push the update
     echo "Syncing updates to remote..."
@@ -66,7 +66,4 @@ done
 
 # Remove the temporary working directory
 cd ..
-rm -rf $timestamp
-
-cd ..
-rm -rf temp
+rm -rf "$tempdir_name"
